@@ -1,0 +1,11 @@
+# Carpetes de compilació
+build/
+out/
+bin/
+
+# Fitxers de l'OS
+.DS_Store
+Thumbs.db
+
+# Configuracions personals de l'IDE
+.vscode/
