@@ -1,0 +1,74 @@
+namespace AIEngine.Core;
+
+enum DataType : byte { Int, Float, Bool, String }
+
+// Paràmetres genèrics per a les accions
+table Parameter {
+  name: string;
+  type: DataType;
+  
+  int_val: int = 0;
+  float_val: float = 0.0;
+  bool_val: bool = false;
+  string_val: string;
+}
+
+enum Operator : byte { Equal, NotEqual, Greater, Less, GreaterOrEqual, LessOrEqual }
+
+table Condition {
+  variable: string;  
+  op: Operator;            
+  
+  compare_type: DataType;
+  int_val: int = 0;
+  float_val: float = 0.0;
+  bool_val: bool = false;
+  string_val: string;
+}
+
+enum NodeType : byte {
+  // FSM
+  State,
+  
+  // BT
+  Sequence,
+  Selector,
+  Parallel,
+  Decorator,
+  Action,
+  ConditionNode 
+}
+
+table Node {
+  id: uint (key);          
+  type: NodeType;
+  
+  // Per a nodes tipus Action o Decorator
+  action_name: string;     
+  action_params: [Parameter]; 
+  
+  // Per a nodes tipus ConditionNode o Decorator
+  conditions: [Condition]; 
+
+  // Per a BT
+  children_ids: [uint];
+}
+
+table Edge {
+  source_id: uint;
+  target_id: uint;
+  
+  conditions: [Condition]; 
+}
+
+enum BrainType : byte { FiniteStateMachine, BehaviorTree }
+
+table AIBrainTemplate {
+  type: BrainType;
+  root_node_id: uint; 
+  
+  nodes: [Node];
+  edges: [Edge];
+}
+
+root_type AIBrainTemplate;
