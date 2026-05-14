@@ -10,4 +10,5 @@ include_directories(schema)
 
 add_executable(AIEngine 
     src/main.cpp
+    src/AIEngine.cpp
 )
