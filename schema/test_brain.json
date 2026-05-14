@@ -1,0 +1,16 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Sequence",
+      "children_ids": [2]
+    },
+    {
+      "id": 2,
+      "type": "Action",
+      "action_name": "MoveTo"
+    }
+  ]
+}

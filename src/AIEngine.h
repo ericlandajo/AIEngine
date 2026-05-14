@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "IActionHandler.h"
 #include "IVariableUpdater.h"
 
@@ -16,5 +17,5 @@ private:
     IActionHandler* m_actionHandler;
     IVariableUpdater* m_variableUpdater;
 
-    // Aquí es guardarà el punter a l'arrel de l'arbre d'aitoolkit
+    std::vector<char> m_fileBuffer;
 };

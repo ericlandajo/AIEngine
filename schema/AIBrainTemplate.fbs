@@ -1,4 +1,4 @@
-namespace AIEngine.Core;
+namespace AIEngineData.Core;
 
 enum DataType : byte { Int, Float, Bool, String }
 
