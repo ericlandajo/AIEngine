@@ -1,54 +1,82 @@
-#include "AIEngine.h"
+#include "AIEngine.hpp"
 #include <iostream>
 #include <fstream>
 #include "AIBrainTemplate_generated.h" 
 
-AIEngine::AIEngine(IActionHandler* actionHandler, IVariableUpdater* variableUpdater)
-    : m_actionHandler(actionHandler), m_variableUpdater(variableUpdater) {
+AIEngine::AIEngine(IActionHandler* actionHandler, IVariableUpdater* variableUpdater) {
+    m_blackboard.actionHandler = actionHandler;
+    m_blackboard.variableUpdater = variableUpdater;
 }
 
 bool AIEngine::LoadFromFile(const std::string& filepath) {
-    std::cout << "Intentant carregar arxiu: " << filepath << std::endl;
-
     std::ifstream file(filepath, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) {
-        std::cerr << "ERROR: No s'ha pogut obrir el fitxer " << filepath << std::endl;
-        return false;
-    }
+    if (!file.is_open()) return false;
 
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
     
     m_fileBuffer.resize(size);
-    if (!file.read(m_fileBuffer.data(), size)) {
-        std::cerr << "ERROR: No s'ha pogut llegir el contingut de " << filepath << std::endl;
-        return false;
+    if (!file.read(m_fileBuffer.data(), size)) return false;
+
+    m_brain = AIEngineData::Core::GetAIBrainTemplate(m_fileBuffer.data());
+    if (m_brain == nullptr) return false;
+
+    m_nodeMap.clear();
+    if (m_brain->nodes() != nullptr) {
+        for (const auto* node : *(m_brain->nodes())) {
+            m_nodeMap[node->id()] = node;
+        }
     }
 
-    auto aiBrain = AIEngineData::Core::GetAIBrainTemplate(m_fileBuffer.data());
-    
-    if (aiBrain == nullptr) {
-        std::cerr << "ERROR: El fitxer no es un AIBrainTemplate valid." << std::endl;
-        return false;
-    }
-
-    std::cout << "Exit! S'ha llegit el cervell correctament." << std::endl;
-    
-    if (aiBrain->type() == AIEngineData::Core::BrainType_BehaviorTree) {
-        std::cout << "Tipus de cervell: Behavior Tree" << std::endl;
-    } else {
-        std::cout << "Tipus de cervell: FSM" << std::endl;
-    }
-
-    std::cout << "Node arrel ID: " << aiBrain->root_node_id() << std::endl;
-    
-    if (aiBrain->nodes() != nullptr) {
-        std::cout << "Total de nodes trobats: " << aiBrain->nodes()->size() << std::endl;
+    if (m_brain->type() == AIEngineData::Core::BrainType_BehaviorTree) {
+        m_btRoot = BuildBTNode(m_brain->root_node_id());
+        if (m_btRoot) {
+            std::cout << "-> Arbre de comportament construït amb èxit!" << std::endl;
+        } else {
+            std::cerr << "-> ERROR en construir l'arbre." << std::endl;
+        }
     }
 
     return true;
 }
 
+std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t nodeId) {
+    auto it = m_nodeMap.find(nodeId);
+    if (it == m_nodeMap.end()) return nullptr;
+
+    const auto* nodeData = it->second;
+
+    switch (nodeData->type()) {
+        case AIEngineData::Core::NodeType_Sequence: {
+            std::vector<std::unique_ptr<aitoolkit::bt::node<Blackboard>>> children;
+            if (nodeData->children_ids() != nullptr) {
+                for (uint32_t child_id : *(nodeData->children_ids())) {
+                    auto childNode = BuildBTNode(child_id);
+                    if (childNode) children.push_back(std::move(childNode));
+                }
+            }
+            return std::make_unique<aitoolkit::bt::seq<Blackboard>>(std::move(children));
+        }
+
+        case AIEngineData::Core::NodeType_Action: {
+            std::string actionName = nodeData->action_name() ? nodeData->action_name()->c_str() : "Unknown";
+            
+            return std::make_unique<aitoolkit::bt::task<Blackboard>>(
+                [actionName](Blackboard& bb) {
+                    bool result = bb.actionHandler->ExecuteAction(actionName);
+                    return result ? aitoolkit::bt::execution_state::success : aitoolkit::bt::execution_state::failure;
+                }
+            );
+        }
+
+        default:
+            std::cerr << "Tipus de node no implementat encara." << std::endl;
+            return nullptr;
+    }
+}
+
 void AIEngine::Update() {
-    // TODO: Avaluar l'arbre
+    if (m_btRoot) {
+        m_btRoot->evaluate(m_blackboard);
+    }
 }
