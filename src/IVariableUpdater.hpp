@@ -5,6 +5,8 @@ class IVariableUpdater {
 public:
     virtual ~IVariableUpdater() = default;
 
-    // Aquest mètode serà cridat quan el motor necessiti avaluar una condició.
-    virtual bool GetCondition(const std::string& conditionName) = 0;
+    virtual bool GetBoolVariable(const std::string& varName) = 0;
+    virtual float GetFloatVariable(const std::string& varName) = 0;
+    virtual int GetIntVariable(const std::string& varName) = 0;
+    virtual std::string GetStringVariable(const std::string& varName) = 0;
 };

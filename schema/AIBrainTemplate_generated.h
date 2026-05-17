@@ -431,7 +431,7 @@ struct Node FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TYPE = 6,
     VT_ACTION_NAME = 8,
     VT_ACTION_PARAMS = 10,
-    VT_CONDITIONS = 12,
+    VT_CONDITION = 12,
     VT_CHILDREN_IDS = 14
   };
   uint32_t id() const {
@@ -452,8 +452,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Parameter>> *action_params() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Parameter>> *>(VT_ACTION_PARAMS);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *conditions() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *>(VT_CONDITIONS);
+  const AIEngineData::Core::Condition *condition() const {
+    return GetPointer<const AIEngineData::Core::Condition *>(VT_CONDITION);
   }
   const ::flatbuffers::Vector<uint32_t> *children_ids() const {
     return GetPointer<const ::flatbuffers::Vector<uint32_t> *>(VT_CHILDREN_IDS);
@@ -468,9 +468,8 @@ struct Node FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyOffset(verifier, VT_ACTION_PARAMS) &&
            verifier.VerifyVector(action_params()) &&
            verifier.VerifyVectorOfTables(action_params()) &&
-           VerifyOffset(verifier, VT_CONDITIONS) &&
-           verifier.VerifyVector(conditions()) &&
-           verifier.VerifyVectorOfTables(conditions()) &&
+           VerifyOffset(verifier, VT_CONDITION) &&
+           verifier.VerifyTable(condition()) &&
            VerifyOffset(verifier, VT_CHILDREN_IDS) &&
            verifier.VerifyVector(children_ids()) &&
            verifier.EndTable();
@@ -493,8 +492,8 @@ struct NodeBuilder {
   void add_action_params(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Parameter>>> action_params) {
     fbb_.AddOffset(Node::VT_ACTION_PARAMS, action_params);
   }
-  void add_conditions(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>>> conditions) {
-    fbb_.AddOffset(Node::VT_CONDITIONS, conditions);
+  void add_condition(::flatbuffers::Offset<AIEngineData::Core::Condition> condition) {
+    fbb_.AddOffset(Node::VT_CONDITION, condition);
   }
   void add_children_ids(::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> children_ids) {
     fbb_.AddOffset(Node::VT_CHILDREN_IDS, children_ids);
@@ -516,11 +515,11 @@ inline ::flatbuffers::Offset<Node> CreateNode(
     AIEngineData::Core::NodeType type = AIEngineData::Core::NodeType_State,
     ::flatbuffers::Offset<::flatbuffers::String> action_name = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Parameter>>> action_params = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>>> conditions = 0,
+    ::flatbuffers::Offset<AIEngineData::Core::Condition> condition = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<uint32_t>> children_ids = 0) {
   NodeBuilder builder_(_fbb);
   builder_.add_children_ids(children_ids);
-  builder_.add_conditions(conditions);
+  builder_.add_condition(condition);
   builder_.add_action_params(action_params);
   builder_.add_action_name(action_name);
   builder_.add_id(id);
@@ -534,11 +533,10 @@ inline ::flatbuffers::Offset<Node> CreateNodeDirect(
     AIEngineData::Core::NodeType type = AIEngineData::Core::NodeType_State,
     const char *action_name = nullptr,
     const std::vector<::flatbuffers::Offset<AIEngineData::Core::Parameter>> *action_params = nullptr,
-    const std::vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *conditions = nullptr,
+    ::flatbuffers::Offset<AIEngineData::Core::Condition> condition = 0,
     const std::vector<uint32_t> *children_ids = nullptr) {
   auto action_name__ = action_name ? _fbb.CreateString(action_name) : 0;
   auto action_params__ = action_params ? _fbb.CreateVector<::flatbuffers::Offset<AIEngineData::Core::Parameter>>(*action_params) : 0;
-  auto conditions__ = conditions ? _fbb.CreateVector<::flatbuffers::Offset<AIEngineData::Core::Condition>>(*conditions) : 0;
   auto children_ids__ = children_ids ? _fbb.CreateVector<uint32_t>(*children_ids) : 0;
   return AIEngineData::Core::CreateNode(
       _fbb,
@@ -546,7 +544,7 @@ inline ::flatbuffers::Offset<Node> CreateNodeDirect(
       type,
       action_name__,
       action_params__,
-      conditions__,
+      condition,
       children_ids__);
 }
 
@@ -555,7 +553,7 @@ struct Edge FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SOURCE_ID = 4,
     VT_TARGET_ID = 6,
-    VT_CONDITIONS = 8
+    VT_CONDITION = 8
   };
   uint32_t source_id() const {
     return GetField<uint32_t>(VT_SOURCE_ID, 0);
@@ -563,17 +561,16 @@ struct Edge FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint32_t target_id() const {
     return GetField<uint32_t>(VT_TARGET_ID, 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *conditions() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *>(VT_CONDITIONS);
+  const AIEngineData::Core::Condition *condition() const {
+    return GetPointer<const AIEngineData::Core::Condition *>(VT_CONDITION);
   }
   template <bool B = false>
   bool Verify(::flatbuffers::VerifierTemplate<B> &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SOURCE_ID, 4) &&
            VerifyField<uint32_t>(verifier, VT_TARGET_ID, 4) &&
-           VerifyOffset(verifier, VT_CONDITIONS) &&
-           verifier.VerifyVector(conditions()) &&
-           verifier.VerifyVectorOfTables(conditions()) &&
+           VerifyOffset(verifier, VT_CONDITION) &&
+           verifier.VerifyTable(condition()) &&
            verifier.EndTable();
   }
 };
@@ -588,8 +585,8 @@ struct EdgeBuilder {
   void add_target_id(uint32_t target_id) {
     fbb_.AddElement<uint32_t>(Edge::VT_TARGET_ID, target_id, 0);
   }
-  void add_conditions(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>>> conditions) {
-    fbb_.AddOffset(Edge::VT_CONDITIONS, conditions);
+  void add_condition(::flatbuffers::Offset<AIEngineData::Core::Condition> condition) {
+    fbb_.AddOffset(Edge::VT_CONDITION, condition);
   }
   explicit EdgeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -606,25 +603,12 @@ inline ::flatbuffers::Offset<Edge> CreateEdge(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t source_id = 0,
     uint32_t target_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<AIEngineData::Core::Condition>>> conditions = 0) {
+    ::flatbuffers::Offset<AIEngineData::Core::Condition> condition = 0) {
   EdgeBuilder builder_(_fbb);
-  builder_.add_conditions(conditions);
+  builder_.add_condition(condition);
   builder_.add_target_id(target_id);
   builder_.add_source_id(source_id);
   return builder_.Finish();
-}
-
-inline ::flatbuffers::Offset<Edge> CreateEdgeDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t source_id = 0,
-    uint32_t target_id = 0,
-    const std::vector<::flatbuffers::Offset<AIEngineData::Core::Condition>> *conditions = nullptr) {
-  auto conditions__ = conditions ? _fbb.CreateVector<::flatbuffers::Offset<AIEngineData::Core::Condition>>(*conditions) : 0;
-  return AIEngineData::Core::CreateEdge(
-      _fbb,
-      source_id,
-      target_id,
-      conditions__);
 }
 
 struct AIBrainTemplate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

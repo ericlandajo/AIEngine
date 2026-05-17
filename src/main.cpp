@@ -11,8 +11,24 @@ public:
 
 class DummyVariableUpdater : public IVariableUpdater {
 public:
-    bool GetCondition(const std::string& conditionName) override {
-        return true; 
+    bool GetBoolVariable(const std::string& varName) override {
+        std::cout << "  [JOC] L'Engine pregunta pel Bool: " << varName << " -> Retornem true" << std::endl;
+        return true; // Return per defecte per proves
+    }
+
+    float GetFloatVariable(const std::string& varName) override {
+        std::cout << "  [JOC] L'Engine pregunta pel Float: " << varName << " -> Retornem 3.14" << std::endl;
+        return 3.14f; // Return per defecte per proves
+    }
+
+    int GetIntVariable(const std::string& varName) override {
+        std::cout << "  [JOC] L'Engine pregunta per l'Int: " << varName << " -> Retornem 10" << std::endl;
+        return 10; // Return per defecte per proves
+    }
+
+    std::string GetStringVariable(const std::string& varName) override {
+        std::cout << "  [JOC] L'Engine pregunta per la String: " << varName << " -> Retornem 'Hello, world!'" << std::endl;
+        return "Hello, world"; // Return per defecte per proves
     }
 };
 

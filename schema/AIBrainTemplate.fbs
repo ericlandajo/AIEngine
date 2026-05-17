@@ -48,7 +48,7 @@ table Node {
   action_params: [Parameter]; 
   
   // Per a nodes tipus ConditionNode o Decorator
-  conditions: [Condition]; 
+  condition: Condition; 
 
   // Per a BT
   children_ids: [uint];
@@ -58,7 +58,7 @@ table Edge {
   source_id: uint;
   target_id: uint;
   
-  conditions: [Condition]; 
+  condition: Condition; 
 }
 
 enum BrainType : byte { FiniteStateMachine, BehaviorTree }
