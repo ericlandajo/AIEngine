@@ -3,11 +3,10 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-
 #include "IActionHandler.hpp"
 #include "IVariableUpdater.hpp"
-
 #include "aitoolkit/behtree.hpp"
+#include "AIBrainTemplate_generated.h" 
 
 namespace AIEngineData {
     namespace Core {
@@ -40,4 +39,6 @@ private:
     std::unordered_map<uint32_t, const AIEngineData::Core::Node*> m_nodeMap;
 
     std::unique_ptr<aitoolkit::bt::node<Blackboard>> m_btRoot;
+
+    std::unique_ptr<aitoolkit::bt::node<Blackboard>> BuildConditionNode(const AIEngineData::Core::Condition* conditionData);
 };
