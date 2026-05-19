@@ -31,3 +31,16 @@ public:
     }
 };
 
+template <class T>
+class SuccessIsFailureNode final : public aitoolkit::bt::node<T> {
+public:
+    SuccessIsFailureNode(std::unique_ptr<aitoolkit::bt::node<T>> child) {
+        this->m_children.push_back(std::move(child));
+    }
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        auto state = this->m_children.front()->evaluate(bb);
+        if (state == aitoolkit::bt::execution_state::success) 
+            return aitoolkit::bt::execution_state::failure;
+        return state;
+    }
+};
