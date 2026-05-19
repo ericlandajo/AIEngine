@@ -44,3 +44,32 @@ public:
         return state;
     }
 };
+
+template <class T>
+class RepeaterNode final : public aitoolkit::bt::node<T> {
+private:
+    int m_max_iterations;
+    mutable int m_current_iteration = 0;
+public:
+    RepeaterNode(int max_iterations, std::unique_ptr<aitoolkit::bt::node<T>> child) 
+        : m_max_iterations(max_iterations) {
+        this->m_children.push_back(std::move(child));
+    }
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (m_current_iteration >= m_max_iterations) {
+            m_current_iteration = 0; // Reiniciem per a futures crides
+            return aitoolkit::bt::execution_state::success; 
+        }
+        
+        auto state = this->m_children.front()->evaluate(bb);
+        
+        if (state != aitoolkit::bt::execution_state::running) {
+            m_current_iteration++;
+            if (m_current_iteration >= m_max_iterations) {
+                m_current_iteration = 0;
+                return aitoolkit::bt::execution_state::success;
+            }
+        }
+        return aitoolkit::bt::execution_state::running; // El node continua en execució
+    }
+};
