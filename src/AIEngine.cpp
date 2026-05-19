@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "AIBrainTemplate_generated.h" 
+#include "ParallelNode.hpp"
 
 AIEngine::AIEngine(IActionHandler* actionHandler, IVariableUpdater* variableUpdater) {
     m_blackboard.actionHandler = actionHandler;
@@ -78,6 +79,25 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
                 }
             }
             return std::make_unique<aitoolkit::bt::sel<Blackboard>>(std::move(children));
+        }
+
+        case AIEngineData::Core::NodeType_Parallel: {
+            std::vector<std::unique_ptr<aitoolkit::bt::node<Blackboard>>> children;
+            if (nodeData->children_ids() != nullptr) {
+                for (uint32_t child_id : *(nodeData->children_ids())) {
+                    auto childNode = BuildBTNode(child_id);
+                    if (childNode) children.push_back(std::move(childNode));
+                }
+            }
+            
+            size_t success_threshold = 1;
+            size_t failure_threshold = children.size();
+
+            return std::make_unique<ParallelNode<Blackboard>>(
+                success_threshold, 
+                failure_threshold, 
+                std::move(children)
+            );
         }
 
         case AIEngineData::Core::NodeType_ConditionNode: {

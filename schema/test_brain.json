@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": 0,
-      "type": "Sequence",
+      "type": "Parallel",
       "children_ids": [1, 2]
     },
     {
