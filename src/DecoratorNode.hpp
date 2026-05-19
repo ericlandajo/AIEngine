@@ -73,3 +73,18 @@ public:
         return aitoolkit::bt::execution_state::running; // El node continua en execució
     }
 };
+
+template <class T>
+class RetryUntilSuccessNode final : public aitoolkit::bt::node<T> {
+public:
+    RetryUntilSuccessNode(std::unique_ptr<aitoolkit::bt::node<T>> child) {
+        this->m_children.push_back(std::move(child));
+    }
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        auto state = this->m_children.front()->evaluate(bb);
+        if (state == aitoolkit::bt::execution_state::success) {
+            return aitoolkit::bt::execution_state::success;
+        }
+        return aitoolkit::bt::execution_state::running; // Si falla, ens mantenim running per tornar a provar
+    }
+};
