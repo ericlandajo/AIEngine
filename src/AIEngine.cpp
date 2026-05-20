@@ -116,7 +116,10 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
 
             std::string decType = nodeData->action_name() ? nodeData->action_name()->str() : "Inverter";
 
-            if (decType == "ForceSuccess") {
+            if (decType == "Inverter") {
+                return std::make_unique<InverterNode<Blackboard>>(std::move(childNode));
+            } 
+            else if (decType == "ForceSuccess") {
                 return std::make_unique<ForceSuccessNode<Blackboard>>(std::move(childNode));
             } 
             else if (decType == "ForceFailure") {

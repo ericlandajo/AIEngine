@@ -57,7 +57,7 @@ public:
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
         if (m_current_iteration >= m_max_iterations) {
-            m_current_iteration = 0; // Reiniciem per a futures crides
+            m_current_iteration = 0; 
             return aitoolkit::bt::execution_state::success; 
         }
         
@@ -70,7 +70,7 @@ public:
                 return aitoolkit::bt::execution_state::success;
             }
         }
-        return aitoolkit::bt::execution_state::running; // El node continua en execució
+        return aitoolkit::bt::execution_state::running; 
     }
 };
 
@@ -85,6 +85,25 @@ public:
         if (state == aitoolkit::bt::execution_state::success) {
             return aitoolkit::bt::execution_state::success;
         }
-        return aitoolkit::bt::execution_state::running; // Si falla, ens mantenim running per tornar a provar
+        return aitoolkit::bt::execution_state::running;
+    }
+};
+
+template <class T>
+class InverterNode final : public aitoolkit::bt::node<T> {
+public:
+    InverterNode(std::unique_ptr<aitoolkit::bt::node<T>> child) {
+        this->m_children.push_back(std::move(child));
+    }
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        auto state = this->m_children.front()->evaluate(bb);
+        
+        if (state == aitoolkit::bt::execution_state::success) {
+            return aitoolkit::bt::execution_state::failure;
+        } else if (state == aitoolkit::bt::execution_state::failure) {
+            return aitoolkit::bt::execution_state::success;
+        }
+        
+        return state;
     }
 };
