@@ -11,6 +11,7 @@ AIEngine::AIEngine(IActionHandler* actionHandler, IVariableUpdater* variableUpda
 }
 
 bool AIEngine::LoadFromFile(const std::string& filepath) {
+    
     std::ifstream file(filepath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) return false;
 
@@ -31,12 +32,18 @@ bool AIEngine::LoadFromFile(const std::string& filepath) {
     }
 
     if (m_brain->type() == AIEngineData::Core::BrainType_BehaviorTree) {
+        m_isFSM = false;
         m_btRoot = BuildBTNode(m_brain->root_node_id());
         if (m_btRoot) {
             std::cout << "-> Arbre de comportament construït amb èxit!" << std::endl;
         } else {
             std::cerr << "-> ERROR en construir l'arbre." << std::endl;
         }
+    } 
+    else if (m_brain->type() == AIEngineData::Core::BrainType_FiniteStateMachine) {
+        m_isFSM = true;
+        m_currentStateId = m_brain->root_node_id(); // El root és l'estat inicial
+        std::cout << "-> Màquina d'Estats construïda amb èxit! Estat inicial: " << m_currentStateId << std::endl;
     }
 
     return true;
@@ -157,72 +164,83 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
 }
 
 std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildConditionNode(const AIEngineData::Core::Condition* conditionData) {
-    if (!conditionData || !conditionData->variable()) {
-        return std::make_unique<aitoolkit::bt::check<Blackboard>>(
-            [](const Blackboard& bb) { return false; }
-        );
-    }
+    return std::make_unique<aitoolkit::bt::check<Blackboard>>(
+        [this, conditionData](const Blackboard& bb) {
+            return this->EvaluateCondition(conditionData);
+        }
+    );
+}
+
+bool AIEngine::EvaluateCondition(const AIEngineData::Core::Condition* conditionData) const {
+    if (!conditionData || !conditionData->variable()) return false;
 
     std::string varName = conditionData->variable()->str();
     auto op = conditionData->op(); 
     auto dataType = conditionData->compare_type();
     
-    int expectedInt = conditionData->int_val();
-    float expectedFloat = conditionData->float_val();
-    bool expectedBool = conditionData->bool_val();
-    std::string expectedString = conditionData->string_val() ? conditionData->string_val()->str() : "";
-
-    return std::make_unique<aitoolkit::bt::check<Blackboard>>(
-        [varName, op, dataType, expectedInt, expectedFloat, expectedBool, expectedString](const Blackboard& bb) {
-            
-            if (dataType == AIEngineData::Core::DataType_Float) {
-                float currentVal = bb.variableUpdater->GetFloatVariable(varName);
-                switch (op) {
-                    case AIEngineData::Core::Operator_Equal: return currentVal == expectedFloat;
-                    case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedFloat;
-                    case AIEngineData::Core::Operator_Greater: return currentVal > expectedFloat;
-                    case AIEngineData::Core::Operator_Less: return currentVal < expectedFloat;
-                    case AIEngineData::Core::Operator_GreaterOrEqual: return currentVal >= expectedFloat;
-                    case AIEngineData::Core::Operator_LessOrEqual: return currentVal <= expectedFloat;
-                    default: return false;
-                }
-            } 
-            else if (dataType == AIEngineData::Core::DataType_Bool) {
-                bool currentVal = bb.variableUpdater->GetBoolVariable(varName);
-                switch (op) {
-                    case AIEngineData::Core::Operator_Equal: return currentVal == expectedBool;
-                    case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedBool;
-                    default: return false;
-                }
-            }
-            else if (dataType == AIEngineData::Core::DataType_Int) {
-                int currentVal = bb.variableUpdater->GetIntVariable(varName);
-                switch (op) {
-                    case AIEngineData::Core::Operator_Equal: return currentVal == expectedInt;
-                    case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedInt;
-                    case AIEngineData::Core::Operator_Greater: return currentVal > expectedInt;
-                    case AIEngineData::Core::Operator_Less: return currentVal < expectedInt;
-                    case AIEngineData::Core::Operator_GreaterOrEqual: return currentVal >= expectedInt;
-                    case AIEngineData::Core::Operator_LessOrEqual: return currentVal <= expectedInt;
-                    default: return false;
-                }
-            }
-            else if (dataType == AIEngineData::Core::DataType_String) {
-                std::string currentVal = bb.variableUpdater->GetStringVariable(varName);
-                switch (op) {
-                    case AIEngineData::Core::Operator_Equal: return currentVal == expectedString;
-                    case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedString;
-                    default: return false; 
-                }
-            }
-
-            return false;
+    if (dataType == AIEngineData::Core::DataType_Float) {
+        float currentVal = m_blackboard.variableUpdater->GetFloatVariable(varName);
+        float expectedFloat = conditionData->float_val();
+        switch (op) {
+            case AIEngineData::Core::Operator_Equal: return currentVal == expectedFloat;
+            case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedFloat;
+            case AIEngineData::Core::Operator_Greater: return currentVal > expectedFloat;
+            case AIEngineData::Core::Operator_Less: return currentVal < expectedFloat;
+            case AIEngineData::Core::Operator_GreaterOrEqual: return currentVal >= expectedFloat;
+            case AIEngineData::Core::Operator_LessOrEqual: return currentVal <= expectedFloat;
+            default: return false;
         }
-    );
+    } 
+    else if (dataType == AIEngineData::Core::DataType_Bool) {
+        bool currentVal = m_blackboard.variableUpdater->GetBoolVariable(varName);
+        bool expectedBool = conditionData->bool_val();
+        switch (op) {
+            case AIEngineData::Core::Operator_Equal: return currentVal == expectedBool;
+            case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedBool;
+            default: return false;
+        }
+    }
+    else if (dataType == AIEngineData::Core::DataType_Int) {
+        int currentVal = m_blackboard.variableUpdater->GetIntVariable(varName);
+        int expectedInt = conditionData->int_val();
+        switch (op) {
+            case AIEngineData::Core::Operator_Equal: return currentVal == expectedInt;
+            case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedInt;
+            case AIEngineData::Core::Operator_Greater: return currentVal > expectedInt;
+            case AIEngineData::Core::Operator_Less: return currentVal < expectedInt;
+            case AIEngineData::Core::Operator_GreaterOrEqual: return currentVal >= expectedInt;
+            case AIEngineData::Core::Operator_LessOrEqual: return currentVal <= expectedInt;
+            default: return false;
+        }
+    }
+    else if (dataType == AIEngineData::Core::DataType_String) {
+        std::string currentVal = m_blackboard.variableUpdater->GetStringVariable(varName);
+        std::string expectedString = conditionData->string_val() ? conditionData->string_val()->str() : "";
+        switch (op) {
+            case AIEngineData::Core::Operator_Equal: return currentVal == expectedString;
+            case AIEngineData::Core::Operator_NotEqual: return currentVal != expectedString;
+            default: return false; 
+        }
+    }
+
+    return false;
 }
 
 void AIEngine::Update() {
+    if (m_isFSM) {
+        UpdateFSM();
+    } else {
+        UpdateBT();
+    }
+}
+
+void AIEngine::UpdateBT() {
     if (m_btRoot) {
         m_btRoot->evaluate(m_blackboard);
     }
+}
+
+void AIEngine::UpdateFSM() {
+    // TODO: Implementar la lògica d'avaluació de transicions i estats
+    std::cout << "  [FSM] Executant tick de la Maquina d'Estats..." << std::endl;
 }

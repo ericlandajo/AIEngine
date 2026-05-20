@@ -41,4 +41,12 @@ private:
     std::unique_ptr<aitoolkit::bt::node<Blackboard>> m_btRoot;
 
     std::unique_ptr<aitoolkit::bt::node<Blackboard>> BuildConditionNode(const AIEngineData::Core::Condition* conditionData);
+
+    uint32_t m_currentStateId = 0; 
+    bool m_isFSM = false;
+
+    void UpdateBT();
+    void UpdateFSM();
+
+    bool EvaluateCondition(const AIEngineData::Core::Condition* conditionData) const;
 };
