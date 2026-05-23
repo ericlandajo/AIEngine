@@ -68,12 +68,30 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
         }
 
         case AIEngineData::Core::NodeType_Action: {
-            std::string actionName = nodeData->action_name() ? nodeData->action_name()->c_str() : "Unknown";
-            
+            std::string actionName = nodeData->action_name() ? nodeData->action_name()->c_str() : "";
+
+            ActionParameters params;
+            if (nodeData->action_params() != nullptr) {
+                for (const auto* paramData : *(nodeData->action_params())) {
+                    if (!paramData->name()) continue;
+                    
+                    ActionParameter p;
+                    p.type = static_cast<ActionParameter::Type>(paramData->type());
+                    p.int_val = paramData->int_val();
+                    p.float_val = paramData->float_val();
+                    p.bool_val = paramData->bool_val();
+                    if (paramData->string_val()) p.string_val = paramData->string_val()->c_str();
+                    
+                    params[paramData->name()->c_str()] = p;
+                }
+            }
             return std::make_unique<aitoolkit::bt::task<Blackboard>>(
-                [actionName](const Blackboard& bb) {
-                    bool result = bb.actionHandler->ExecuteAction(actionName);
-                    return result ? aitoolkit::bt::execution_state::success : aitoolkit::bt::execution_state::failure;
+                [actionName, params](Blackboard& bb) {
+                    if (bb.actionHandler) {
+                        bool success = bb.actionHandler->ExecuteAction(actionName, params);
+                        return success ? aitoolkit::bt::execution_state::success : aitoolkit::bt::execution_state::failure;
+                    }
+                    return aitoolkit::bt::execution_state::failure;
                 }
             );
         }
@@ -267,7 +285,27 @@ void AIEngine::UpdateFSM() {
             std::string actionName = stateNode->action_name() ? stateNode->action_name()->c_str() : "";
             
             if (!actionName.empty()) {
-                m_blackboard.actionHandler->ExecuteAction(actionName);
+                // Preparem el diccionari de paràmetres
+                ActionParameters params;
+                
+                // Si el node té paràmetres al FlatBuffer, els llegim
+                if (stateNode->action_params() != nullptr) {
+                    for (const auto* paramData : *(stateNode->action_params())) {
+                        if (!paramData->name()) continue;
+                        
+                        ActionParameter p;
+                        p.type = static_cast<ActionParameter::Type>(paramData->type());
+                        p.int_val = paramData->int_val();
+                        p.float_val = paramData->float_val();
+                        p.bool_val = paramData->bool_val();
+                        if (paramData->string_val()) p.string_val = paramData->string_val()->c_str();
+                        
+                        params[paramData->name()->c_str()] = p;
+                    }
+                }
+                
+                // Enviem l'acció amb els paràmetres inclosos!
+                m_blackboard.actionHandler->ExecuteAction(actionName, params);
             }
         }
     }

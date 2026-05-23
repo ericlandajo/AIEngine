@@ -3,8 +3,24 @@
 
 class DummyActionHandler : public IActionHandler {
 public:
-    bool ExecuteAction(const std::string& actionName) override {
-        std::cout << "  [JOC] Executant acció: " << actionName << std::endl;
+    bool ExecuteAction(const std::string& actionName, const ActionParameters& params) override {
+        std::cout << "  [JOC] Executant acció: " << actionName;
+        
+        if (!params.empty()) {
+            std::cout << " | Params: { ";
+            for (const auto& [name, param] : params) {
+                std::cout << name << ": ";
+                switch (param.type) {
+                    case ActionParameter::Type::Int: std::cout << param.int_val; break;
+                    case ActionParameter::Type::Float: std::cout << param.float_val; break;
+                    case ActionParameter::Type::Bool: std::cout << (param.bool_val ? "true" : "false"); break;
+                    case ActionParameter::Type::String: std::cout << "\"" << param.string_val << "\""; break;
+                }
+                std::cout << " ";
+            }
+            std::cout << "}";
+        }
+        std::cout << std::endl;
         return true; 
     }
 };
