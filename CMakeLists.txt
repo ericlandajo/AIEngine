@@ -8,7 +8,16 @@ include_directories(include)
 include_directories(src)     
 include_directories(schema)  
 
-add_executable(AIEngine 
-    src/main.cpp
+add_library(AIEngineCore STATIC 
     src/AIEngine.cpp
 )
+
+add_library(AIEnginePlugin SHARED 
+    src/AIEngineAPI.cpp
+)
+target_link_libraries(AIEnginePlugin PRIVATE AIEngineCore)
+
+add_executable(AIEngineTest 
+    src/main.cpp
+)
+target_link_libraries(AIEngineTest PRIVATE AIEngineCore)
