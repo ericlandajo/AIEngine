@@ -1,26 +1,38 @@
 {
-  "type": "BehaviorTree",
-  "root_node_id": 0,
+  "type": "FiniteStateMachine",
+  "root_node_id": 1,
   "nodes": [
     {
-      "id": 0,
-      "type": "Parallel",
-      "children_ids": [1, 2]
+      "id": 1,
+      "type": "State",
+      "action_name": "Idle"
     },
     {
-      "id": 1,
-      "type": "ConditionNode",
+      "id": 2,
+      "type": "State",
+      "action_name": "Attack"
+    }
+  ],
+  "edges": [
+    {
+      "source_id": 1,
+      "target_id": 2,
       "condition": {
-        "variable": "HP",
-        "op": "Greater",
+        "variable": "EnemyDistance",
+        "op": "Less",
         "compare_type": "Float",
         "float_val": 10.0
       }
     },
     {
-      "id": 2,
-      "type": "Action",
-      "action_name": "Atacar"
+      "source_id": 2,
+      "target_id": 1,
+      "condition": {
+        "variable": "EnemyDistance",
+        "op": "GreaterOrEqual",
+        "compare_type": "Float",
+        "float_val": 10.0
+      }
     }
   ]
 }

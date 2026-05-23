@@ -241,6 +241,34 @@ void AIEngine::UpdateBT() {
 }
 
 void AIEngine::UpdateFSM() {
-    // TODO: Implementar la lògica d'avaluació de transicions i estats
-    std::cout << "  [FSM] Executant tick de la Maquina d'Estats..." << std::endl;
+    if (!m_brain) return;
+
+    if (m_brain->edges() != nullptr) {
+        for (const auto* edge : *(m_brain->edges())) {
+            
+            if (edge->source_id() == m_currentStateId) {
+                
+                if (EvaluateCondition(edge->condition())) {
+                    
+                    m_currentStateId = edge->target_id();
+                    std::cout << "  [FSM] Transició disparada! Nou Estat ID: " << m_currentStateId << std::endl;
+                    
+                    break; 
+                }
+            }
+        }
+    }
+
+    auto it = m_nodeMap.find(m_currentStateId);
+    if (it != m_nodeMap.end()) {
+        const auto* stateNode = it->second;
+        
+        if (stateNode->type() == AIEngineData::Core::NodeType_State) {
+            std::string actionName = stateNode->action_name() ? stateNode->action_name()->c_str() : "";
+            
+            if (!actionName.empty()) {
+                m_blackboard.actionHandler->ExecuteAction(actionName);
+            }
+        }
+    }
 }
