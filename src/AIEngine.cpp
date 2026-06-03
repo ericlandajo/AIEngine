@@ -244,7 +244,8 @@ bool AIEngine::EvaluateCondition(const AIEngineData::Core::Condition* conditionD
     return false;
 }
 
-void AIEngine::Update() {
+void AIEngine::Update(float deltaTime) {
+    m_blackboard.deltaTime = deltaTime;
     if (m_isFSM) {
         UpdateFSM();
     } else {

@@ -79,9 +79,9 @@ extern "C" {
         return container->engine->LoadFromFile(filePath);
     }
 
-    void AIEngine_Update(void* enginePtr) {
+    void AIEngine_Update(void* enginePtr, float deltaTime) {
         if (!enginePtr) return;
         EngineContainer* container = static_cast<EngineContainer*>(enginePtr);
-        container->engine->Update();
+        container->engine->Update(deltaTime);
     }
 }

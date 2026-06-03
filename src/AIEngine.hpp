@@ -18,6 +18,7 @@ namespace AIEngineData {
 struct Blackboard {
     IActionHandler* actionHandler = nullptr;
     IVariableUpdater* variableUpdater = nullptr;
+    float deltaTime = 0.0f;
 };
 
 class AIEngine {
@@ -27,7 +28,7 @@ public:
 
     bool LoadFromFile(const std::string& filepath);
     
-    void Update();
+    void Update(float deltaTime); 
 
 private:
     std::unique_ptr<aitoolkit::bt::node<Blackboard>> BuildBTNode(uint32_t nodeId);

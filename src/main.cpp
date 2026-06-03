@@ -59,8 +59,8 @@ int main() {
     engine.LoadFromFile("schema/test_brain.bin");
 
     std::cout << "--- EXECUTANT UPDATE ---" << std::endl;
-    engine.Update();
-
+    // Li passem un deltaTime fals de 0.016 segons (60 FPS) per a les proves de consola
+    engine.Update(0.016f);
     std::cout << "--- FINALITZANT MOTOR D'IA ---" << std::endl;
     return 0;
 }

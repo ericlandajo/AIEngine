@@ -20,5 +20,5 @@ extern "C" {
     EXPORT_API void AIEngine_Destroy(void* enginePtr);
     
     EXPORT_API bool AIEngine_LoadBrain(void* enginePtr, const char* filePath);
-    EXPORT_API void AIEngine_Update(void* enginePtr);
+    EXPORT_API void AIEngine_Update(void* enginePtr, float deltaTime);
 }
