@@ -107,3 +107,39 @@ public:
         return state;
     }
 };
+
+template <class T>
+class CooldownNode final : public aitoolkit::bt::node<T> {
+public:
+    CooldownNode(float cooldownTime, std::unique_ptr<aitoolkit::bt::node<T>> child)
+        : m_cooldownTime(cooldownTime), m_elapsedTime(0.0f), m_onCooldown(false) {
+        this->m_children.push_back(std::move(child));
+    }
+
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (m_onCooldown) {
+            m_elapsedTime += bb.deltaTime;
+            
+            if (m_elapsedTime >= m_cooldownTime) {
+                m_onCooldown = false;
+                m_elapsedTime = 0.0f;
+            } else {
+                return aitoolkit::bt::execution_state::failure;
+            }
+        }
+
+        auto state = this->m_children.front()->evaluate(bb);
+
+        if (state == aitoolkit::bt::execution_state::success) {
+            m_onCooldown = true;
+            m_elapsedTime = 0.0f;
+        }
+
+        return state;
+    }
+
+private:
+    float m_cooldownTime;
+    mutable float m_elapsedTime;
+    mutable bool m_onCooldown;
+};
