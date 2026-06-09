@@ -10,6 +10,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         auto state = this->m_children.front()->evaluate(bb);
         if (state == aitoolkit::bt::execution_state::running) 
             return aitoolkit::bt::execution_state::running;
@@ -24,6 +27,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+    if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         auto state = this->m_children.front()->evaluate(bb);
         if (state == aitoolkit::bt::execution_state::running) 
             return aitoolkit::bt::execution_state::running;
@@ -38,6 +44,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         auto state = this->m_children.front()->evaluate(bb);
         if (state == aitoolkit::bt::execution_state::success) 
             return aitoolkit::bt::execution_state::failure;
@@ -56,6 +65,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         if (m_current_iteration >= m_max_iterations) {
             m_current_iteration = 0; 
             return aitoolkit::bt::execution_state::success; 
@@ -81,6 +93,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         auto state = this->m_children.front()->evaluate(bb);
         if (state == aitoolkit::bt::execution_state::success) {
             return aitoolkit::bt::execution_state::success;
@@ -96,6 +111,9 @@ public:
         this->m_children.push_back(std::move(child));
     }
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         auto state = this->m_children.front()->evaluate(bb);
         
         if (state == aitoolkit::bt::execution_state::success) {
@@ -117,6 +135,9 @@ public:
     }
 
     virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         if (m_onCooldown) {
             m_elapsedTime += bb.deltaTime;
             
@@ -142,4 +163,37 @@ private:
     float m_cooldownTime;
     mutable float m_elapsedTime;
     mutable bool m_onCooldown;
+};
+
+template <class T>
+class TimeoutNode final : public aitoolkit::bt::node<T> {
+public:
+    TimeoutNode(float timeout, std::unique_ptr<aitoolkit::bt::node<T>> child)
+        : m_timeout(timeout), m_elapsedTime(0.0f) {
+        this->m_children.push_back(std::move(child));
+    }
+
+    virtual aitoolkit::bt::execution_state evaluate(T& bb) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
+        m_elapsedTime += bb.deltaTime;
+
+        if (m_elapsedTime >= m_timeout) {
+            m_elapsedTime = 0.0f; 
+            return aitoolkit::bt::execution_state::failure;
+        }
+
+        auto state = this->m_children.front()->evaluate(bb);
+
+        if (state != aitoolkit::bt::execution_state::running) {
+            m_elapsedTime = 0.0f; 
+        }
+
+        return state;
+    }
+
+private:
+    float m_timeout;
+    mutable float m_elapsedTime;
 };

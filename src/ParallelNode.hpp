@@ -17,6 +17,9 @@ public:
     }
 
     virtual aitoolkit::bt::execution_state evaluate(T& blackboard) const override {
+        if (this->m_children.empty() || !this->m_children.front()) 
+            return aitoolkit::bt::execution_state::failure;
+
         size_t successes = 0;
         size_t failures = 0;
 
