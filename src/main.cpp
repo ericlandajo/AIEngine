@@ -3,7 +3,7 @@
 
 class DummyActionHandler : public IActionHandler {
 public:
-    bool ExecuteAction(const std::string& actionName, const ActionParameters& params) override {
+    virtual aitoolkit::bt::execution_state ExecuteAction(const std::string& actionName, const ActionParameters& params) override {
         std::cout << "  [JOC] Executant acció: " << actionName;
         
         if (!params.empty()) {
@@ -21,7 +21,7 @@ public:
             std::cout << "}";
         }
         std::cout << std::endl;
-        return true; 
+        return aitoolkit::bt::execution_state::success;
     }
 };
 

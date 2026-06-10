@@ -8,11 +8,18 @@ private:
 public:
     UnityActionHandler(ActionCallback cb) : m_actionCb(cb) {}
 
-    bool ExecuteAction(const std::string& actionName, const ActionParameters& params) override {
+    aitoolkit::bt::execution_state ExecuteAction(const std::string& actionName, const ActionParameters& params) override {
         if (m_actionCb) {
-            return m_actionCb(actionName.c_str());
+            int actionResult = m_actionCb(actionName.c_str());
+            
+            switch (actionResult) {
+                case 1:  return aitoolkit::bt::execution_state::success;
+                case 2:  return aitoolkit::bt::execution_state::running;
+                case 0:
+                default: return aitoolkit::bt::execution_state::failure;
+            }
         }
-        return false;
+        return aitoolkit::bt::execution_state::failure;
     }
 };
 

@@ -7,7 +7,7 @@
 #endif
 
 extern "C" {
-    typedef bool (*ActionCallback)(const char* actionName); 
+    typedef int (*ActionCallback)(const char* actionName); 
     typedef float (*GetFloatVarCallback)(const char* varName);
     typedef bool (*GetBoolVarCallback)(const char* varName);
     typedef int (*GetIntVarCallback)(const char* varName);

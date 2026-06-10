@@ -21,6 +21,11 @@ public:
         size_t failures = 0;
 
         for (auto& child : this->m_children) {
+            if (!child) {
+                failures++;
+                continue; 
+            }
+
             auto state = child->evaluate(blackboard);
             if (state == aitoolkit::bt::execution_state::success) {
                 successes++;

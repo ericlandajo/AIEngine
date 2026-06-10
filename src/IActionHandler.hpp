@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <aitoolkit/behtree.hpp>
 
 struct ActionParameter {
     enum class Type { Int, Float, Bool, String };
@@ -18,5 +19,6 @@ class IActionHandler {
 public:
     virtual ~IActionHandler() = default;
     
-    virtual bool ExecuteAction(const std::string& actionName, const ActionParameters& params) = 0;
+    virtual aitoolkit::bt::execution_state ExecuteAction(const std::string& actionName, const ActionParameters& params) = 0;
 };
+

@@ -67,7 +67,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
             return std::make_unique<aitoolkit::bt::seq<Blackboard>>(std::move(children));
         }
 
-        case AIEngineData::Core::NodeType_Action: {
+    case AIEngineData::Core::NodeType_Action: {
             std::string actionName = nodeData->action_name() ? nodeData->action_name()->c_str() : "";
 
             ActionParameters params;
@@ -88,8 +88,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
             return std::make_unique<aitoolkit::bt::task<Blackboard>>(
                 [actionName, params](Blackboard& bb) {
                     if (bb.actionHandler) {
-                        bool success = bb.actionHandler->ExecuteAction(actionName, params);
-                        return success ? aitoolkit::bt::execution_state::success : aitoolkit::bt::execution_state::failure;
+                        return bb.actionHandler->ExecuteAction(actionName, params);
                     }
                     return aitoolkit::bt::execution_state::failure;
                 }
