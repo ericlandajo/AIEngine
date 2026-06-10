@@ -11,11 +11,13 @@ extern "C" {
     typedef float (*GetFloatVarCallback)(const char* varName);
     typedef bool (*GetBoolVarCallback)(const char* varName);
     typedef int (*GetIntVarCallback)(const char* varName);
+    typedef const char* (*GetStringVarCallback)(const char* varName);
 
     EXPORT_API void* AIEngine_Create(ActionCallback actionCb, 
                                      GetFloatVarCallback floatCb, 
                                      GetBoolVarCallback boolCb,
-                                     GetIntVarCallback intCb);
+                                     GetIntVarCallback intCb,
+                                     GetStringVarCallback stringCb);
                                      
     EXPORT_API void AIEngine_Destroy(void* enginePtr);
     

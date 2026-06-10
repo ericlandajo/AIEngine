@@ -28,6 +28,7 @@ private:
     GetFloatVarCallback m_floatCb;
     GetBoolVarCallback m_boolCb;
     GetIntVarCallback m_intCb;
+    GetStringVarCallback m_stringCb;
 public:
     UnityVariableUpdater(GetFloatVarCallback fCb, GetBoolVarCallback bCb, GetIntVarCallback iCb) 
         : m_floatCb(fCb), m_boolCb(bCb), m_intCb(iCb) {}
@@ -48,6 +49,12 @@ public:
     }
 
     std::string GetStringVariable(const std::string& varName) override {
+        if (m_stringCb) {
+            const char* unityStr = m_stringCb(varName.c_str());
+            if (unityStr != nullptr) {
+                return std::string(unityStr);
+            }
+        }
         return "";
     }
 };
@@ -60,11 +67,11 @@ struct EngineContainer {
 
 extern "C" {
 
-    void* AIEngine_Create(ActionCallback actionCb, GetFloatVarCallback floatCb, GetBoolVarCallback boolCb, GetIntVarCallback intCb) {
+void* AIEngine_Create(ActionCallback actionCb, GetFloatVarCallback floatCb, GetBoolVarCallback boolCb, GetIntVarCallback intCb, GetStringVarCallback stringCb) {
         EngineContainer* container = new EngineContainer();
         
         container->actionHandler = new UnityActionHandler(actionCb);
-        container->variableUpdater = new UnityVariableUpdater(floatCb, boolCb, intCb);
+        container->variableUpdater = new UnityVariableUpdater(floatCb, boolCb, intCb, stringCb);
         container->engine = new AIEngine(container->actionHandler, container->variableUpdater);
         
         return container;
