@@ -176,6 +176,13 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
                 }
                 return std::make_unique<CooldownNode<Blackboard>>(time, std::move(childNode));
             }
+            else if (decType == "Timeout") {
+                float time = 1.0f;
+                if (nodeData->action_params() && nodeData->action_params()->size() > 0) {
+                    time = nodeData->action_params()->Get(0)->float_val();
+                }
+                return std::make_unique<TimeoutNode<Blackboard>>(time, std::move(childNode));
+            }
             else {
                 std::cerr << "[WARNING] Decorator desconegut o no suportat: " << decType << std::endl;
                 return childNode; 
