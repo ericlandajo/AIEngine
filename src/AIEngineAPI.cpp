@@ -30,8 +30,8 @@ private:
     GetIntVarCallback m_intCb;
     GetStringVarCallback m_stringCb;
 public:
-    UnityVariableUpdater(GetFloatVarCallback fCb, GetBoolVarCallback bCb, GetIntVarCallback iCb) 
-        : m_floatCb(fCb), m_boolCb(bCb), m_intCb(iCb) {}
+    UnityVariableUpdater(GetFloatVarCallback fCb, GetBoolVarCallback bCb, GetIntVarCallback iCb, GetStringVarCallback sCb) 
+        : m_floatCb(fCb), m_boolCb(bCb), m_intCb(iCb), m_stringCb(sCb) {}
 
     float GetFloatVariable(const std::string& varName) override {
         if (m_floatCb) return m_floatCb(varName.c_str());

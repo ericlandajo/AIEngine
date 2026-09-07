@@ -13,12 +13,20 @@ include_directories(include)
 include_directories(src)     
 include_directories(schema)  
 
+# =====================================================================
+#  NUCLI: biblioteca independent del motor de joc.
+#  No conté ni main() ni la capa P/Invoke, de manera que tant el plugin
+#  com la suite de tests hi poden enllaçar directament.
+# =====================================================================
 add_library(AIEngineCore STATIC 
     src/AIEngine.cpp
 )
 
 set_target_properties(AIEngineCore PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+# =====================================================================
+#  PLUGIN: la DLL que consumeix Unity (nucli + capa d'interop en C).
+# =====================================================================
 add_library(AIEnginePlugin SHARED 
     src/AIEngineAPI.cpp
 )
@@ -29,7 +37,29 @@ set_target_properties(AIEnginePlugin PROPERTIES
      RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/../AIEngineDemo/AI Engine Demo/Assets/Plugins"
  )
 
-add_executable(AIEngineTest 
+# =====================================================================
+#  DEMO: executable de consola per a proves manuals (main.cpp).
+# =====================================================================
+add_executable(AIEngineDemo 
     src/main.cpp
 )
-target_link_libraries(AIEngineTest PRIVATE AIEngineCore)
+target_link_libraries(AIEngineDemo PRIVATE AIEngineCore)
+
+# =====================================================================
+#  TESTS: suite automatitzada. Es pot desactivar amb
+#  -DAIENGINE_BUILD_TESTS=OFF.
+# =====================================================================
+option(AIENGINE_BUILD_TESTS "Compilar la suite de tests" ON)
+
+if(AIENGINE_BUILD_TESTS)
+    include(FetchContent)
+    FetchContent_Declare(
+        doctest
+        GIT_REPOSITORY https://github.com/doctest/doctest.git
+        GIT_TAG        v2.4.11
+    )
+    FetchContent_MakeAvailable(doctest)
+
+    enable_testing()
+    add_subdirectory(tests)
+endif()
