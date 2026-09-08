@@ -21,6 +21,13 @@ bool AIEngine::LoadFromFile(const std::string& filepath) {
     m_fileBuffer.resize(size);
     if (!file.read(m_fileBuffer.data(), size)) return false;
 
+    flatbuffers::Verifier verifier(
+        reinterpret_cast<const uint8_t*>(m_fileBuffer.data()), m_fileBuffer.size());
+    if (!AIEngineData::Core::VerifyAIBrainTemplateBuffer(verifier)) {
+        std::cerr << "[ERROR] El fitxer no conté un cervell d'IA vàlid." << std::endl;
+        return false;
+    }
+
     m_brain = AIEngineData::Core::GetAIBrainTemplate(m_fileBuffer.data());
     if (m_brain == nullptr) return false;
 
