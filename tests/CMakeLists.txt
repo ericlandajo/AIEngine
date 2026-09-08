@@ -6,7 +6,7 @@ add_executable(AIEngineTests
     test_brainbuilder.cpp
     test_conditions.cpp
     test_fsm.cpp
-    # test_loading.cpp
+    test_loading.cpp
 )
 
 target_link_libraries(AIEngineTests PRIVATE
