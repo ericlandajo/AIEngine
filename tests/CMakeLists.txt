@@ -3,6 +3,7 @@ add_executable(AIEngineTests
     test_mocks.cpp
     test_decorators.cpp
     test_parallel.cpp
+    test_brainbuilder.cpp
     # test_conditions.cpp
     # test_fsm.cpp
     # test_loading.cpp
