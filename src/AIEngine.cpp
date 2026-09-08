@@ -33,7 +33,8 @@ bool AIEngine::LoadFromFile(const std::string& filepath) {
 
     if (m_brain->type() == AIEngineData::Core::BrainType_BehaviorTree) {
         m_isFSM = false;
-        m_btRoot = BuildBTNode(m_brain->root_node_id());
+        std::unordered_set<uint32_t> path;
+        m_btRoot = BuildBTNode(m_brain->root_node_id(), path);
         if (m_btRoot) {
             std::cout << "-> Arbre de comportament construït amb èxit!" << std::endl;
         } else {
@@ -49,9 +50,25 @@ bool AIEngine::LoadFromFile(const std::string& filepath) {
     return true;
 }
 
-std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t nodeId) {
+std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(
+        uint32_t nodeId, std::unordered_set<uint32_t>& path) {
+
     auto it = m_nodeMap.find(nodeId);
     if (it == m_nodeMap.end()) return nullptr;
+
+    // Si el node ja és al camí que estem recorrent, el graf conté un
+    // cicle. Es descarta la branca per evitar una recursió infinita.
+    if (!path.insert(nodeId).second) {
+        std::cerr << "[ERROR] Cicle detectat a l'arbre, node id: " << nodeId << std::endl;
+        return nullptr;
+    }
+
+    // Treu el node del camí en sortir, sigui per quin punt sigui
+    struct PathGuard {
+        std::unordered_set<uint32_t>& p;
+        uint32_t id;
+        ~PathGuard() { p.erase(id); }
+    } guard{ path, nodeId };
 
     const auto* nodeData = it->second;
 
@@ -60,7 +77,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
             std::vector<std::unique_ptr<aitoolkit::bt::node<Blackboard>>> children;
             if (nodeData->children_ids() != nullptr) {
                 for (uint32_t child_id : *(nodeData->children_ids())) {
-                    auto childNode = BuildBTNode(child_id);
+                    auto childNode = BuildBTNode(child_id, path);
                     if (childNode) children.push_back(std::move(childNode));
                 }
             }
@@ -103,7 +120,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
             std::vector<std::unique_ptr<aitoolkit::bt::node<Blackboard>>> children;
             if (nodeData->children_ids() != nullptr) {
                 for (uint32_t child_id : *(nodeData->children_ids())) {
-                    auto childNode = BuildBTNode(child_id);
+                    auto childNode = BuildBTNode(child_id, path);
                     if (childNode) children.push_back(std::move(childNode));
                 }
             }
@@ -114,7 +131,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
             std::vector<std::unique_ptr<aitoolkit::bt::node<Blackboard>>> children;
             if (nodeData->children_ids() != nullptr) {
                 for (uint32_t child_id : *(nodeData->children_ids())) {
-                    auto childNode = BuildBTNode(child_id);
+                    auto childNode = BuildBTNode(child_id, path);
                     if (childNode) children.push_back(std::move(childNode));
                 }
             }
@@ -135,7 +152,7 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(uint32_t 
                 return nullptr;
             }
             
-            auto childNode = BuildBTNode(nodeData->children_ids()->Get(0));
+            auto childNode = BuildBTNode(nodeData->children_ids()->Get(0), path);
             if (!childNode) return nullptr;
 
             std::string decType = nodeData->action_name() ? nodeData->action_name()->str() : "Inverter";

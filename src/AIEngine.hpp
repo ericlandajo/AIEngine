@@ -7,6 +7,7 @@
 #include "IVariableUpdater.hpp"
 #include "aitoolkit/behtree.hpp"
 #include "AIBrainTemplate_generated.h" 
+#include <unordered_set>
 
 namespace AIEngineData {
     namespace Core {
@@ -32,6 +33,10 @@ public:
 
 private:
     std::unique_ptr<aitoolkit::bt::node<Blackboard>> BuildBTNode(uint32_t nodeId);
+    
+    // Versió recursiva, que arrossega els nodes del camí actual
+    std::unique_ptr<aitoolkit::bt::node<Blackboard>> BuildBTNode(
+        uint32_t nodeId, std::unordered_set<uint32_t>& path);
 
     Blackboard m_blackboard;
     std::vector<char> m_fileBuffer;
