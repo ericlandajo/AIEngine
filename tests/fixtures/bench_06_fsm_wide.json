@@ -1,0 +1,327 @@
+{
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 2,
+      "action_name": "Chase"
+    },
+    {
+      "id": 3,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 4,
+      "action_name": "Chase"
+    },
+    {
+      "id": 5,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 6,
+      "action_name": "Chase"
+    },
+    {
+      "id": 7,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 8,
+      "action_name": "Chase"
+    },
+    {
+      "id": 9,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 10,
+      "action_name": "Chase"
+    },
+    {
+      "id": 11,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 12,
+      "action_name": "Chase"
+    },
+    {
+      "id": 13,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 14,
+      "action_name": "Chase"
+    },
+    {
+      "id": 15,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 16,
+      "action_name": "Chase"
+    },
+    {
+      "id": 17,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 18,
+      "action_name": "Chase"
+    },
+    {
+      "id": 19,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 20,
+      "action_name": "Chase"
+    }
+  ],
+  "edges": [
+    {
+      "source_id": 1,
+      "target_id": 2,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 1,
+      "target_id": 3,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 1,
+      "target_id": 4,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 1,
+      "target_id": 5,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 1,
+      "target_id": 6,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 2,
+      "target_id": 3,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 3,
+      "target_id": 4,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 4,
+      "target_id": 5,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 5,
+      "target_id": 6,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 6,
+      "target_id": 7,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 7,
+      "target_id": 8,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 8,
+      "target_id": 9,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 9,
+      "target_id": 10,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 10,
+      "target_id": 11,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 11,
+      "target_id": 12,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 12,
+      "target_id": 13,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 13,
+      "target_id": 14,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 14,
+      "target_id": 15,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 15,
+      "target_id": 16,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 16,
+      "target_id": 17,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 17,
+      "target_id": 18,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 18,
+      "target_id": 19,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 19,
+      "target_id": 20,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 20,
+      "target_id": 1,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    }
+  ]
+}

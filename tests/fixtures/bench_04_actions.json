@@ -1,0 +1,12 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    { "id": 1, "type": "Parallel", "children_ids": [2, 3, 4, 5, 6] },
+    { "id": 2, "type": "Action", "action_name": "Patrol" },
+    { "id": 3, "type": "Action", "action_name": "Chase" },
+    { "id": 4, "type": "Action", "action_name": "Patrol" },
+    { "id": 5, "type": "Action", "action_name": "Chase" },
+    { "id": 6, "type": "Action", "action_name": "Patrol" }
+  ]
+}

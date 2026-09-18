@@ -1,0 +1,39 @@
+{
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "action_name": "Patrol"
+    },
+    {
+      "id": 2,
+      "action_name": "Chase"
+    },
+    {
+      "id": 3,
+      "action_name": "Patrol"
+    }
+  ],
+  "edges": [
+    {
+      "source_id": 1,
+      "target_id": 2,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 2,
+      "target_id": 3,
+      "condition": {
+        "variable": "isTired",
+        "op": "Equal",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    }
+  ]
+}

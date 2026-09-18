@@ -1,0 +1,12 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    { "id": 1, "type": "Decorator", "action_name": "ForceSuccess", "children_ids": [2] },
+    { "id": 2, "type": "Decorator", "action_name": "ForceSuccess", "children_ids": [3] },
+    { "id": 3, "type": "Decorator", "action_name": "ForceSuccess", "children_ids": [4] },
+    { "id": 4, "type": "Decorator", "action_name": "ForceSuccess", "children_ids": [5] },
+    { "id": 5, "type": "Decorator", "action_name": "ForceSuccess", "children_ids": [6] },
+    { "id": 6, "type": "Action", "action_name": "Patrol" }
+  ]
+}

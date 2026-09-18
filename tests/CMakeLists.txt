@@ -8,6 +8,7 @@ add_executable(AIEngineTests
     test_fsm.cpp
     test_loading.cpp
     test_editor_fixtures.cpp
+    test_benchmark_fixtures.cpp
 )
 
 target_link_libraries(AIEngineTests PRIVATE

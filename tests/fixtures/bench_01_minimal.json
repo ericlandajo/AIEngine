@@ -1,0 +1,7 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    { "id": 1, "type": "Action", "action_name": "Patrol" }
+  ]
+}
