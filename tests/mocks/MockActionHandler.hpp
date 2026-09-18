@@ -119,3 +119,18 @@ private:
     std::unordered_map<std::string, size_t> m_resultIndex;
     State m_defaultResult = State::success;
 };
+
+#include <doctest/doctest.h>
+
+namespace doctest {
+    template<> struct StringMaker<std::vector<std::string>> {
+        static String convert(const std::vector<std::string>& v) {
+            std::string s = "{";
+            for (size_t i = 0; i < v.size(); ++i) {
+                if (i) s += ", ";
+                s += "\"" + v[i] + "\"";
+            }
+            return String((s + "}").c_str());
+        }
+    };
+}

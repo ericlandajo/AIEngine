@@ -1,0 +1,75 @@
+{
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "action_name": "Patrol",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 2.0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "action_name": "Chase",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 5.0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "action_name": "Flee",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 7.0
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source_id": 1,
+      "target_id": 2,
+      "condition": {
+        "variable": "playerVisible",
+        "compare_type": "Bool",
+        "bool_val": true
+      }
+    },
+    {
+      "source_id": 2,
+      "target_id": 3,
+      "condition": {
+        "variable": "health",
+        "op": "Less",
+        "int_val": 20
+      }
+    },
+    {
+      "source_id": 3,
+      "target_id": 1,
+      "condition": {
+        "variable": "health",
+        "op": "Greater",
+        "int_val": 50
+      }
+    },
+    {
+      "source_id": 2,
+      "target_id": 1,
+      "condition": {
+        "variable": "playerVisible",
+        "compare_type": "Bool"
+      }
+    }
+  ]
+}

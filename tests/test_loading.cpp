@@ -104,10 +104,11 @@ TEST_CASE("Un fitxer buit no provoca cap crida en actualitzar-se") {
     MockVariableUpdater vars;
     AIEngine engine(&actions, &vars);
 
-    engine.LoadFromFile(buit.Path());
+    CHECK_FALSE(engine.LoadFromFile(buit.Path()));
     engine.Update(0.016f);
 
     CHECK(actions.TotalCalls() == 0);
+
 }
 
 // =====================================================================
@@ -124,7 +125,7 @@ TEST_CASE("Un cervell sense cap node no provoca cap crida") {
     MockVariableUpdater vars;
     AIEngine engine(&actions, &vars);
 
-    engine.LoadFromFile(brain.Path());
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
     engine.Update(0.016f);
 
     CHECK(actions.TotalCalls() == 0);
@@ -141,7 +142,7 @@ TEST_CASE("Un arbre amb arrel inexistent no provoca cap crida") {
     MockVariableUpdater vars;
     AIEngine engine(&actions, &vars);
 
-    engine.LoadFromFile(brain.Path());
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
     engine.Update(0.016f);
 
     CHECK(actions.TotalCalls() == 0);
@@ -180,7 +181,7 @@ TEST_CASE("Una seqüència sense cap fill vàlid no provoca cap crida") {
     MockVariableUpdater vars;
     AIEngine engine(&actions, &vars);
 
-    engine.LoadFromFile(brain.Path());
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
     engine.Update(0.016f);
 
     CHECK(actions.TotalCalls() == 0);
@@ -348,42 +349,58 @@ TEST_CASE("Un node de tipus State dins d'un arbre no és construïble") {
     MockVariableUpdater vars;
     AIEngine engine(&actions, &vars);
 
-    engine.LoadFromFile(brain.Path());
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
     engine.Update(0.016f);
 
     CHECK(actions.TotalCalls() == 0);
 }
 
-// =====================================================================
-//  PENDENT DE DECISIÓ: cicles a l'arbre
-//
-//  BuildBTNode és recursiva i no manté cap registre de nodes ja
-//  visitats, de manera que un .bin que contingui un cicle (per exemple,
-//  un node que es tingui a si mateix com a fill) provocaria una
-//  recursió infinita i el tancament del procés per desbordament de pila.
-//
-//  Actualment això no es dona perquè l'editor valida l'absència de
-//  cicles abans d'exportar (cas d'ús CU-04, flux alternatiu 2a), però
-//  el motor no es protegeix pel seu compte davant d'un fitxer generat
-//  per una altra eina o manipulat manualment.
-//
-//  El test es deixa desactivat perquè, de confirmar-se el problema,
-//  faria caure tot l'executable de proves i impediria veure la resta
-//  de resultats. Convé decidir si s'afegeix la protecció al motor o si
-//  es documenta com un supòsit sobre les dades d'entrada.
-//
-//  TEST_CASE("Un arbre amb un cicle no provoca recursió infinita") {
-//      auto brain = BrainBuilder()
-//          .AsBehaviorTree()
-//          .AddSequence(1, { 1 })   // el node es té a si mateix com a fill
-//          .SetRoot(1)
-//          .Build();
-//
-//      MockActionHandler actions;
-//      MockVariableUpdater vars;
-//      AIEngine engine(&actions, &vars);
-//
-//      engine.LoadFromFile(brain.Path());
-//      CHECK(actions.TotalCalls() == 0);
-//  }
-// =====================================================================
+TEST_CASE("Un arbre amb un cicle es rebutja en lloc de provocar recursió infinita") {
+    auto brain = BrainBuilder()
+        .AsBehaviorTree()
+        .AddSequence(1, { 1 })   // el node es té a si mateix com a fill
+        .SetRoot(1)
+        .Build();
+
+    MockActionHandler actions;
+    MockVariableUpdater vars;
+    AIEngine engine(&actions, &vars);
+
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
+}
+
+TEST_CASE("Un cicle indirecte entre diversos nodes també es detecta") {
+    auto brain = BrainBuilder()
+        .AsBehaviorTree()
+        .AddSequence(1, { 2 })
+        .AddSequence(2, { 1 })   // torna enrere cap al node 1
+        .SetRoot(1)
+        .Build();
+
+    MockActionHandler actions;
+    MockVariableUpdater vars;
+    AIEngine engine(&actions, &vars);
+
+    CHECK_FALSE(engine.LoadFromFile(brain.Path()));
+}
+
+TEST_CASE("Un node compartit per dues branques no es confon amb un cicle") {
+    auto brain = BrainBuilder()
+        .AsBehaviorTree()
+        .AddSequence(1, { 2, 3 })
+        .AddSequence(2, { 4 })
+        .AddSequence(3, { 4 })   // totes dues branques apunten al node 4
+        .AddAction(4, "Compartida")
+        .SetRoot(1)
+        .Build();
+
+    MockActionHandler actions;
+    MockVariableUpdater vars;
+    AIEngine engine(&actions, &vars);
+
+    REQUIRE(engine.LoadFromFile(brain.Path()));
+    engine.Update(0.016f);
+
+    // El node 4 apareix a dues branques, així que s'executa dues vegades
+    CHECK(actions.CallCount("Compartida") == 2);
+}

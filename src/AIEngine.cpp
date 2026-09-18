@@ -42,16 +42,21 @@ bool AIEngine::LoadFromFile(const std::string& filepath) {
         m_isFSM = false;
         std::unordered_set<uint32_t> path;
         m_btRoot = BuildBTNode(m_brain->root_node_id(), path);
-        if (m_btRoot) {
-            std::cout << "-> Arbre de comportament construït amb èxit!" << std::endl;
-        } else {
+        if (!m_btRoot) {
             std::cerr << "-> ERROR en construir l'arbre." << std::endl;
+            return false;
         }
+        std::cout << "-> Arbre de comportament construït amb èxit!" << std::endl;
     } 
     else if (m_brain->type() == AIEngineData::Core::BrainType_FiniteStateMachine) {
         m_isFSM = true;
         m_currentStateId = m_brain->root_node_id(); // El root és l'estat inicial
-        std::cout << "-> Màquina d'Estats construïda amb èxit! Estat inicial: " << m_currentStateId << std::endl;
+        if (m_nodeMap.find(m_currentStateId) == m_nodeMap.end()) {
+            std::cerr << "-> ERROR: l'estat inicial no existeix." << std::endl;
+            return false;
+        }
+        std::cout << "-> Màquina d'Estats construïda amb èxit! Estat inicial: "
+                  << m_currentStateId << std::endl;
     }
 
     return true;
@@ -87,6 +92,10 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(
                     auto childNode = BuildBTNode(child_id, path);
                     if (childNode) children.push_back(std::move(childNode));
                 }
+            }
+            if (children.empty()) {
+                std::cerr << "[ERROR] Node compost sense fills vàlids, id: " << nodeId << std::endl;
+                return nullptr;
             }
             return std::make_unique<aitoolkit::bt::seq<Blackboard>>(std::move(children));
         }
@@ -131,6 +140,10 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(
                     if (childNode) children.push_back(std::move(childNode));
                 }
             }
+            if (children.empty()) {
+                std::cerr << "[ERROR] Node compost sense fills vàlids, id: " << nodeId << std::endl;
+                return nullptr;
+            }
             return std::make_unique<aitoolkit::bt::sel<Blackboard>>(std::move(children));
         }
 
@@ -142,7 +155,10 @@ std::unique_ptr<aitoolkit::bt::node<Blackboard>> AIEngine::BuildBTNode(
                     if (childNode) children.push_back(std::move(childNode));
                 }
             }
-            
+            if (children.empty()) {
+                std::cerr << "[ERROR] Node compost sense fills vàlids, id: " << nodeId << std::endl;
+                return nullptr;
+            }
             size_t success_threshold = 1;
             size_t failure_threshold = children.size();
 

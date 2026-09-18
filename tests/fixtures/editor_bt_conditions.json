@@ -1,0 +1,181 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Parallel",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        2,
+        4,
+        12,
+        13
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        11,
+        8
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Action",
+      "action_name": "OkFloat",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 4,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        6,
+        3
+      ]
+    },
+    {
+      "id": 5,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "boolVar",
+        "compare_type": "Bool",
+        "bool_val": true
+      },
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 6,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "floatVar",
+        "op": "LessOrEqual",
+        "compare_type": "Float",
+        "float_val": 20.0
+      },
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 7,
+      "type": "Action",
+      "action_name": "OkBool",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 8,
+      "type": "Action",
+      "action_name": "OkInt",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 9,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "stringVar",
+        "op": "NotEqual",
+        "compare_type": "String",
+        "string_val": "xyz"
+      },
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 10,
+      "type": "Action",
+      "action_name": "OkString",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 11,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "intVar",
+        "op": "GreaterOrEqual",
+        "int_val": 5
+      },
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 12,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        5,
+        7
+      ]
+    },
+    {
+      "id": 13,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        9,
+        10
+      ]
+    }
+  ],
+  "edges": [
+
+  ]
+}

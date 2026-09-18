@@ -1,0 +1,214 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Parallel",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        8,
+        5,
+        3,
+        2,
+        4,
+        6,
+        9,
+        7
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Decorator",
+      "action_name": "SuccessIsFailure",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        10
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Decorator",
+      "action_name": "ForceFailure",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        16
+      ]
+    },
+    {
+      "id": 4,
+      "type": "Decorator",
+      "action_name": "Repeater",
+      "action_params": [
+        {
+          "name": "count",
+          "int_val": 2
+        }
+      ],
+      "children_ids": [
+        17
+      ]
+    },
+    {
+      "id": 5,
+      "type": "Decorator",
+      "action_name": "ForceSuccess",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        14
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Decorator",
+      "action_name": "RetryUntilSuccess",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        15
+      ]
+    },
+    {
+      "id": 7,
+      "type": "Decorator",
+      "action_name": "Timeout",
+      "action_params": [
+        {
+          "name": "time",
+          "type": "Float",
+          "float_val": 1.0
+        }
+      ],
+      "children_ids": [
+        11
+      ]
+    },
+    {
+      "id": 8,
+      "type": "Decorator",
+      "action_name": "Inverter",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        12
+      ]
+    },
+    {
+      "id": 9,
+      "type": "Decorator",
+      "action_name": "Cooldown",
+      "action_params": [
+        {
+          "name": "time",
+          "type": "Float",
+          "float_val": 1.0
+        }
+      ],
+      "children_ids": [
+        13
+      ]
+    },
+    {
+      "id": 10,
+      "type": "Action",
+      "action_name": "ActSuccessIsFailure",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 11,
+      "type": "Action",
+      "action_name": "ActTimeout",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 12,
+      "type": "Action",
+      "action_name": "ActInverter",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 13,
+      "type": "Action",
+      "action_name": "ActCooldown",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 14,
+      "type": "Action",
+      "action_name": "ActForceSuccess",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 15,
+      "type": "Action",
+      "action_name": "ActRetryUntilSuccess",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 16,
+      "type": "Action",
+      "action_name": "ActForceFailure",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 17,
+      "type": "Action",
+      "action_name": "ActRepeater",
+      "action_params": [
+
+      ],
+      "children_ids": [
+
+      ]
+    }
+  ],
+  "edges": [
+
+  ]
+}

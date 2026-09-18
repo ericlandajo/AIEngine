@@ -1,0 +1,49 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Selector",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Action",
+      "action_name": "TestParams",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 3.5
+        },
+        {
+          "name": "priority",
+          "int_val": 7
+        },
+        {
+          "name": "isUrgent",
+          "type": "Bool",
+          "bool_val": true
+        },
+        {
+          "name": "target",
+          "type": "String",
+          "string_val": "PlayerBase"
+        }
+      ],
+      "children_ids": [
+
+      ]
+    }
+  ],
+  "edges": [
+
+  ]
+}

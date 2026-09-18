@@ -1,0 +1,118 @@
+{
+  "type": "BehaviorTree",
+  "root_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Selector",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        2,
+        5
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        4,
+        3
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Action",
+      "action_name": "Chase",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 5.0
+        }
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 4,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "playerVisible",
+        "compare_type": "Bool",
+        "bool_val": true
+      },
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 5,
+      "type": "Sequence",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        6,
+        7
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Decorator",
+      "action_name": "Inverter",
+      "action_params": [
+
+      ],
+      "children_ids": [
+        8
+      ]
+    },
+    {
+      "id": 7,
+      "type": "Action",
+      "action_name": "Patrol",
+      "action_params": [
+        {
+          "name": "speed",
+          "type": "Float",
+          "float_val": 2.0
+        }
+      ],
+      "children_ids": [
+
+      ]
+    },
+    {
+      "id": 8,
+      "type": "ConditionNode",
+      "action_name": "",
+      "action_params": [
+
+      ],
+      "condition": {
+        "variable": "isTired",
+        "compare_type": "Bool",
+        "bool_val": true
+      },
+      "children_ids": [
+
+      ]
+    }
+  ],
+  "edges": [
+
+  ]
+}
