@@ -9,3 +9,7 @@ Thumbs.db
 
 # Configuracions personals de l'IDE
 .vscode/
+
+.vs/
+.idea/
+CMakeUserPresets.json
